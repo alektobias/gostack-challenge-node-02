@@ -5,7 +5,6 @@ interface Balance {
   outcome: number;
   total: number;
 }
-
 class TransactionsRepository {
   private transactions: Transaction[];
 
@@ -14,15 +13,37 @@ class TransactionsRepository {
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
   public getBalance(): Balance {
-    // TODO
+    const incomes = this.transactions.filter(
+      transaction => transaction.type === 'income',
+    );
+    const outcomes = this.transactions.filter(
+      transaction => transaction.type === 'outcome',
+    );
+
+    const incomesValue = incomes.reduce(
+      (prev, current) => prev + current.value,
+      0,
+    );
+    const outcomesValue = outcomes.reduce(
+      (prev, current) => prev + current.value,
+      0,
+    );
+    const balance = {
+      income: incomesValue,
+      outcome: outcomesValue,
+      total: incomesValue - outcomesValue,
+    };
+    return balance;
   }
 
-  public create(): Transaction {
-    // TODO
+  public create({ title, value, type }: Omit<Transaction, 'id'>): Transaction {
+    const transaction = new Transaction({ title, value, type });
+    this.transactions.push(transaction);
+    return transaction;
   }
 }
 
